@@ -73,7 +73,8 @@
     DemoTableController *controller = [[DemoTableController alloc] initWithStyle:UITableViewStylePlain];
     controller.delegate = self;
     popover = [[FPPopoverKeyboardResponsiveController alloc] initWithViewController:controller];
-    popover.tint = FPPopoverDefaultTint;
+    popover.tint = FPPopoverWhiteTint;
+    popover.border = NO;
     popover.keyboardHeight = _keyboardHeight;
     
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)

@@ -10,7 +10,7 @@
 #import "FPPopoverView.h"
 #import "ARCMacros.h"
 
-#define FP_POPOVER_ARROW_HEIGHT 20.0
+#define FP_POPOVER_ARROW_HEIGHT 10.0
 #define FP_POPOVER_ARROW_BASE 20.0
 #define FP_POPOVER_RADIUS 10.0
 
@@ -363,7 +363,7 @@
     CGContextSaveGState(ctx);
     
     //content fill
-    CGPathRef contentPath = [self newContentPathWithBorderWidth:2.0 arrowDirection:_arrowDirection];
+    CGPathRef contentPath = [self newContentPathWithBorderWidth:self.border ? 2.0 : 0.0 arrowDirection:_arrowDirection];
     
     
     CGContextAddPath(ctx, contentPath);
@@ -412,38 +412,44 @@
 
     
     CGContextFillRect(ctx, CGRectMake(0, end.y, self.bounds.size.width, self.bounds.size.height-end.y));
+    
     //internal border
     CGContextBeginPath(ctx);
     CGContextAddPath(ctx, contentPath);
-    CGContextSetRGBStrokeColor(ctx, 0.7, 0.7, 0.7, 1.0);
+    CGContextSetRGBStrokeColor(ctx, self.border ? 0.7 : 1.0, self.border ? 0.7 : 1.0, self.border ? 0.7 : 1.0, 1.0);
     CGContextSetLineWidth(ctx, 1);
     CGContextSetLineCap(ctx,kCGLineCapRound);
     CGContextSetLineJoin(ctx, kCGLineJoinRound);
     CGContextStrokePath(ctx);
     CGPathRelease(contentPath);
-
-    //external border
-    CGPathRef externalBorderPath = [self newContentPathWithBorderWidth:1.0 arrowDirection:_arrowDirection];
-    CGContextBeginPath(ctx);
-    CGContextAddPath(ctx, externalBorderPath);
-    CGContextSetRGBStrokeColor(ctx, 0.4, 0.4, 0.4, 1.0);
-    CGContextSetLineWidth(ctx, 1);
-    CGContextSetLineCap(ctx,kCGLineCapRound);
-    CGContextSetLineJoin(ctx, kCGLineJoinRound);
-    CGContextStrokePath(ctx);
-    CGPathRelease(externalBorderPath);
-
-    //3D border of the content view
-    if(self.draw3dBorder) {
-        CGRect cvRect = _contentView.frame;
-        //firstLine
-        CGContextSetRGBStrokeColor(ctx, 0.7, 0.7, 0.7, 1.0);
-        CGContextStrokeRect(ctx, cvRect);
-        //secondLine
-        cvRect.origin.x -= 1; cvRect.origin.y -= 1; cvRect.size.height += 2; cvRect.size.width += 2;
+    
+    if (self.border) {
+        //external border
+        CGPathRef externalBorderPath = [self newContentPathWithBorderWidth:self.border ? 1.0 : 0.0 arrowDirection:_arrowDirection];
+        CGContextBeginPath(ctx);
+        CGContextAddPath(ctx, externalBorderPath);
         CGContextSetRGBStrokeColor(ctx, 0.4, 0.4, 0.4, 1.0);
-        CGContextStrokeRect(ctx, cvRect);        
+        CGContextSetLineWidth(ctx, 1);
+        CGContextSetLineCap(ctx,kCGLineCapRound);
+        CGContextSetLineJoin(ctx, kCGLineJoinRound);
+        CGContextStrokePath(ctx);
+        CGPathRelease(externalBorderPath);
+        
+        //3D border of the content view
+        if(self.draw3dBorder) {
+            CGRect cvRect = _contentView.frame;
+            //firstLine
+            CGContextSetRGBStrokeColor(ctx, 0.7, 0.7, 0.7, 1.0);
+            CGContextStrokeRect(ctx, cvRect);
+            //secondLine
+            cvRect.origin.x -= 1; cvRect.origin.y -= 1; cvRect.size.height += 2; cvRect.size.width += 2;
+            CGContextSetRGBStrokeColor(ctx, 0.4, 0.4, 0.4, 1.0);
+            CGContextStrokeRect(ctx, cvRect);        
+        }
+
     }
+    
+
     
     
     CGContextRestoreGState(ctx);
